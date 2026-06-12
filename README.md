@@ -1,51 +1,55 @@
 local SG = Instance.new("ScreenGui", game.CoreGui) SG.Name = "FastResetGui"
-local Kavo = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Kavo.CreateLib("Script Hub Của Bạn", "Midnight") -- Bạn có thể đổi màu: "DarkTheme", "Ocean", "Grape"
-local Tab = Window:NewTab("Main")
-local Sec = Tab:NewSection("Tính Năng Tự Động")
-
--- Tính năng ẩn (Ấn E ăn ngay) chạy ngầm tự động
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+    Name = "Script Hub Của Bạn", LoadingTitle = "Đang khởi tạo...", LoadingSubtitle = "Bởi [Tên của bạn]",
+    ConfigurationSaving = { Enabled = true, FolderName = "MyScriptHub", FileName = "Config" },
+    Discord = { Enabled = false, Invite = "noinvitelink", RememberJoins = true }, KeySystem = false, 
+})
 pcall(function()
     local function inst(obj) if obj:IsA("ProximityPrompt") then obj.HoldDuration = 0 end end
     for _, v in pairs(game:GetDescendants()) do pcall(inst, v) end
     game.DescendantAdded:Connect(function(v) pcall(inst, v) end)
 end)
-
--- Các nút bật/tắt tính năng
-Sec:NewToggle("Auto Cash (Chuồng 1 - 40)", "Tự động thu thập tiền chuồng 1 đến 40", function(Value)
-    _G.AutoCash = Value
-    while _G.AutoCash do
-        task.wait(0.1) 
-        pcall(function()
-            local stands = game.Players.LocalPlayer:FindFirstChild("AnimalStands")
-            if stands then
-                for i = 1, 40 do
-                    if not _G.AutoCash then break end
-                    local s = stands:FindFirstChild(tostring(i))
-                    if s then game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CollectCash"):FireServer(s) end
+local MainTab = Window:CreateTab("Main", 4483362458) MainTab:CreateSection("Tính Năng Tự Động")
+MainTab:CreateToggle({
+    Name = "Auto Cash (Chuồng 1 - 40)", CurrentValue = false, Flag = "AutoCashToggle",
+    Callback = function(Value)
+        _G.AutoCash = Value
+        while _G.AutoCash do
+            task.wait(0.1) 
+            pcall(function()
+                local stands = game.Players.LocalPlayer:FindFirstChild("AnimalStands")
+                if stands then
+                    for i = 1, 40 do
+                        if not _G.AutoCash then break end
+                        local s = stands:FindFirstChild(tostring(i))
+                        if s then game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CollectCash"):FireServer(s) end
+                    end
                 end
-            end
-        end)
+            end)
+        end
+    end,
+})
+MainTab:CreateToggle({
+    Name = "Tự Động Trùng Sinh (Auto Rebirth)", CurrentValue = false, Flag = "AutoRebirthToggle",
+    Callback = function(Value)
+        _G.AutoRebirth = Value
+        while _G.AutoRebirth do
+            task.wait(1) 
+            pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Rebirth"):FireServer() end)
+        end
+    end,
+})
+MainTab:CreateToggle({
+    Name = "Tự Động Mua Tốc Độ (Auto Buy Speed)", CurrentValue = false, Flag = "AutoBuySpeedToggle",
+    Callback = function(Value)
+        _G.AutoBuySpeed = Value
+        while _G.AutoBuySpeed do
+            task.wait(0.5) 
+            pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("BuySpeed"):FireServer(5) end)
+        end
     end
-end)
-
-Sec:NewToggle("Tự Động Trùng Sinh (Auto Rebirth)", "Tự động trùng sinh khi đủ điều kiện", function(Value)
-    _G.AutoRebirth = Value
-    while _G.AutoRebirth do
-        task.wait(1) 
-        pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Rebirth"):FireServer() end)
-    end
-end)
-
-Sec:NewToggle("Tự Động Mua Tốc Độ (Auto Buy Speed)", "Tự động nâng cấp tốc độ chạy", function(Value)
-    _G.AutoBuySpeed = Value
-    while _G.AutoBuySpeed do
-        task.wait(0.5) 
-        pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("BuySpeed"):FireServer(5) end)
-    end
-end)
-
--- Nút Reset nhanh (R) dạng nổi di chuyển được bằng cách kéo thả
+})
 local RB = Instance.new("TextButton", SG) local UC = Instance.new("UICorner", RB)
 RB.Name = "ResetButton" RB.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 RB.Position = UDim2.new(0.05, 0, 0.4, 0) RB.Size = UDim2.new(0, 50, 0, 50) 
