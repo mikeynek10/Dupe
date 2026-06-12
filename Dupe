@@ -1,8 +1,8 @@
 local SG = Instance.new("ScreenGui", game.CoreGui) SG.Name = "FastResetGui"
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
-    Name = "Script Hub Của Bạn", LoadingTitle = "Đang khởi tạo...", LoadingSubtitle = "Bởi [Tên của bạn]",
-    ConfigurationSaving = { Enabled = true, FolderName = "MyScriptHub", FileName = "Config" },
+    Name = "Script Hub Của Bạn", LoadingTitle = "loading", LoadingSubtitle = "❤️‍🔥MIKEY❤️‍🔥",
+    ConfigurationSaving = { Enabled = true, FolderName = "MIKEYDUPE", FileName = "Config" },
     Discord = { Enabled = false, Invite = "noinvitelink", RememberJoins = true }, KeySystem = false, 
 })
 pcall(function()
@@ -12,7 +12,7 @@ pcall(function()
 end)
 local MainTab = Window:CreateTab("Main", 4483362458) MainTab:CreateSection("Tính Năng Tự Động")
 MainTab:CreateToggle({
-    Name = "Auto Cash (Chuồng 1 - 40)", CurrentValue = false, Flag = "AutoCashToggle",
+    Name = "Auto Cash", CurrentValue = false, Flag = "AutoCashToggle",
     Callback = function(Value)
         _G.AutoCash = Value
         while _G.AutoCash do
@@ -31,7 +31,7 @@ MainTab:CreateToggle({
     end,
 })
 MainTab:CreateToggle({
-    Name = "Tự Động Trùng Sinh (Auto Rebirth)", CurrentValue = false, Flag = "AutoRebirthToggle",
+    Name = "Auto Rebirth", CurrentValue = false, Flag = "AutoRebirthToggle",
     Callback = function(Value)
         _G.AutoRebirth = Value
         while _G.AutoRebirth do
@@ -41,7 +41,7 @@ MainTab:CreateToggle({
     end,
 })
 MainTab:CreateToggle({
-    Name = "Tự Động Mua Tốc Độ (Auto Buy Speed)", CurrentValue = false, Flag = "AutoBuySpeedToggle",
+    Name = "Auto Buy Speed", CurrentValue = false, Flag = "AutoBuySpeedToggle",
     Callback = function(Value)
         _G.AutoBuySpeed = Value
         while _G.AutoBuySpeed do
@@ -74,3 +74,4 @@ RB.MouseButton1Click:Connect(function()
     local p = game.Players.LocalPlayer
     if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.Health = 0 end
 end)
+                       
