@@ -1,7 +1,7 @@
 local SG = Instance.new("ScreenGui", game.CoreGui) SG.Name = "FastResetGui"
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
-    Name = "Script Hub Của Bạn", LoadingTitle = "loading", LoadingSubtitle = "❤️‍🔥MIKEY❤️‍🔥",
+    Name = "Script MIKEY HUB ", LoadingTitle = "loading", LoadingSubtitle = "❤️‍🔥MIKEY❤️‍🔥",
     ConfigurationSaving = { Enabled = true, FolderName = "MIKEYDUPE", FileName = "Config" },
     Discord = { Enabled = false, Invite = "noinvitelink", RememberJoins = true }, KeySystem = false, 
 })
