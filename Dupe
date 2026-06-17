@@ -1,16 +1,25 @@
 local SG = Instance.new("ScreenGui", game.CoreGui) SG.Name = "FastResetGui"
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Biến toàn cục để lưu trạng thái
+_G.RespawnAtLocation = false
+_G.SavedCFrame = nil
+
 local Window = Rayfield:CreateWindow({
-    Name = "Script MIKEY HUB ", LoadingTitle = "loading", LoadingSubtitle = "❤️‍🔥MIKEY❤️‍🔥",
+    Name = "Script Hub Của Bạn", LoadingTitle = "loading", LoadingSubtitle = "❤️‍🔥MIKEY❤️‍🔥",
     ConfigurationSaving = { Enabled = true, FolderName = "MIKEYDUPE", FileName = "Config" },
     Discord = { Enabled = false, Invite = "noinvitelink", RememberJoins = true }, KeySystem = false, 
 })
+
 pcall(function()
     local function inst(obj) if obj:IsA("ProximityPrompt") then obj.HoldDuration = 0 end end
     for _, v in pairs(game:GetDescendants()) do pcall(inst, v) end
     game.DescendantAdded:Connect(function(v) pcall(inst, v) end)
 end)
-local MainTab = Window:CreateTab("Main", 4483362458) MainTab:CreateSection("Tính Năng Tự Động")
+
+-- TAB 1: MAIN (Tính năng cũ)
+local MainTab = Window:CreateTab("Main", 4483362458) 
+
 MainTab:CreateToggle({
     Name = "Auto Cash", CurrentValue = false, Flag = "AutoCashToggle",
     Callback = function(Value)
@@ -18,60 +27,106 @@ MainTab:CreateToggle({
         while _G.AutoCash do
             task.wait(0.1) 
             pcall(function()
-                local stands = game.Players.LocalPlayer:FindFirstChild("AnimalStands")
-                if stands then
-                    for i = 1, 40 do
-                        if not _G.AutoCash then break end
-                        local s = stands:FindFirstChild(tostring(i))
-                        if s then game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CollectCash"):FireServer(s) end
+                local playerName = game.Players.LocalPlayer.Name
+                local myPlot = workspace:FindFirstChild("Plots") and workspace.Plots:FindFirstChild(playerName)
+                if myPlot then
+                    local stands = myPlot:FindFirstChild("AnimalStands")
+                    if stands then
+                        for i = 1, 40 do
+                            if not _G.AutoCash then break end
+                            local s = stands:FindFirstChild(tostring(i))
+                            if s then game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CollectCash"):FireServer(s) end
+                        end
                     end
                 end
             end)
         end
     end,
 })
+
 MainTab:CreateToggle({
-    Name = "Auto Rebirth", CurrentValue = false, Flag = "AutoRebirthToggle",
+    Name = "Auto Drop", CurrentValue = false, Flag = "AutoDropToggle",
     Callback = function(Value)
-        _G.AutoRebirth = Value
-        while _G.AutoRebirth do
-            task.wait(1) 
-            pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Rebirth"):FireServer() end)
+        _G.AutoDrop = Value
+        while _G.AutoDrop do
+            task.wait(0.1)
+            pcall(function()
+                local playerName = game.Players.LocalPlayer.Name
+                local myPlot = workspace:FindFirstChild("Plots") and workspace.Plots:FindFirstChild(playerName)
+                if myPlot then
+                    local stands = myPlot:FindFirstChild("AnimalStands")
+                    if stands then
+                        for i = 1, 40 do
+                            if not _G.AutoDrop then break end
+                            local s = stands:FindFirstChild(tostring(i))
+                            if s then 
+                                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InteractStand"):FireServer(s) 
+                            end
+                        end
+                    end
+                end
+            end)
         end
     end,
 })
-MainTab:CreateToggle({
-    Name = "Auto Buy Speed", CurrentValue = false, Flag = "AutoBuySpeedToggle",
+
+-- TAB 2: UTILITY (Nơi chứa Toggle hồi sinh)
+local UtilityTab = Window:CreateTab("Utility", 4483362458)
+UtilityTab:CreateSection("Respawn Settings")
+
+UtilityTab:CreateToggle({
+    Name = "Hồi sinh tại chỗ cũ",
+    CurrentValue = false,
     Callback = function(Value)
-        _G.AutoBuySpeed = Value
-        while _G.AutoBuySpeed do
-            task.wait(0.5) 
-            pcall(function() game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("BuySpeed"):FireServer(5) end)
+        _G.RespawnAtLocation = Value
+        Rayfield:Notify({Title = "Respawn", Content = "Đã "..(Value and "Bật" or "Tắt").." hồi sinh tại chỗ!", Duration = 3})
+    end,
+})
+
+-- LOGIC HỒI SINH
+game.Players.LocalPlayer.CharacterAdded:Connect(function(newChar)
+    if _G.RespawnAtLocation and _G.SavedCFrame then
+        task.wait(0.5) -- Đợi nhân vật tải xong
+        local hrp = newChar:WaitForChild("HumanoidRootPart", 5)
+        if hrp then
+            hrp.CFrame = _G.SavedCFrame
         end
     end
-})
+end)
+
+-- NÚT RESET (Cập nhật logic lưu tọa độ)
 local RB = Instance.new("TextButton", SG) local UC = Instance.new("UICorner", RB)
 RB.Name = "ResetButton" RB.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 RB.Position = UDim2.new(0.05, 0, 0.4, 0) RB.Size = UDim2.new(0, 50, 0, 50) 
 RB.Font = Enum.Font.GothamBold RB.Text = "R" RB.TextColor3 = Color3.fromRGB(255, 255, 255)
 RB.TextSize = 24 RB.ZIndex = 999 UC.CornerRadius = UDim.new(1, 0)
+
 local UIS = game:GetService("UserInputService") local dragging, dragStart, startPos
+
 RB.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging, dragStart, startPos = true, input.Position, RB.Position
     end
 end)
+
 UIS.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         RB.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
+
 UIS.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
 end)
+
 RB.MouseButton1Click:Connect(function()
     local p = game.Players.LocalPlayer
-    if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.Health = 0 end
+    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Humanoid") then
+        -- Lưu vị trí nếu tính năng đang Bật
+        if _G.RespawnAtLocation then
+            _G.SavedCFrame = p.Character.HumanoidRootPart.CFrame
+        end
+        p.Character.Humanoid.Health = 0
+    end
 end)
-                       
